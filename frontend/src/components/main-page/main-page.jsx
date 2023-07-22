@@ -53,7 +53,7 @@ export const MainPage = ({ queryPage, setQueryPage, extraClass = "" }) => {
             <MainCard
               cardId={item.id}
               key={index}
-              img={item.image}
+              img={item.image_url}
               name={item.name}
               date={item.birth_year}
               color={item.color}
