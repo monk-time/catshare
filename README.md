@@ -7,6 +7,7 @@ CatShare — социальная сеть для обмена фотограф�
 - Python 3.10
 - Django
 - Django REST Framework
+- PostgreSQL
 - Node.js
 - React
 - Gunicorn
