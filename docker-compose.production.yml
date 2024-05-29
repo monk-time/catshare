@@ -1,5 +1,3 @@
-version: '3'
-
 volumes:
   pg_data:
   static:
@@ -12,7 +10,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    image: monktime/kittygram_backend
+    image: monktime/catshare_backend
     env_file: .env
     depends_on:
       - db
@@ -20,13 +18,13 @@ services:
       - static:/backend_static
       - media:/backend_media
   frontend:
-    image: monktime/kittygram_frontend
+    image: monktime/catshare_frontend
     env_file: .env
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - static:/frontend_static
   gateway:
-    image: monktime/kittygram_gateway
+    image: monktime/catshare_gateway
     env_file: .env
     volumes:
       - static:/static

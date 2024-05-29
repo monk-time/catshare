@@ -82,7 +82,7 @@ export const SignUp = ({ extraClass = "" }) => {
       <p
         className={`text text_type_medium-20 text_color_input mb-10 ${styles.subtitle}`}
       >
-        Зарегистрируйтесь для доступа к Kittygram!
+        Зарегистрируйтесь для доступа к CatShare!
       </p>
       <FormContainer>
         <form className={styles.form}>

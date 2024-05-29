@@ -15,8 +15,9 @@ class Hex2NameColor(serializers.Field):
     def to_internal_value(self, data):
         try:
             data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError('Для этого цвета нет имени')
+        except ValueError as e:
+            msg = 'Для этого цвета нет имени'
+            raise serializers.ValidationError(msg) from e
         return data
 
 
@@ -31,8 +32,8 @@ class AchievementSerializer(serializers.ModelSerializer):
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
+            formatstr, imgstr = data.split(';base64,')
+            ext = formatstr.split('/')[-1]
 
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
@@ -52,8 +53,15 @@ class CatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cat
         fields = (
-            'id', 'name', 'color', 'birth_year', 'achievements',
-            'owner', 'age', 'image', 'image_url'
+            'id',
+            'name',
+            'color',
+            'birth_year',
+            'achievements',
+            'owner',
+            'age',
+            'image',
+            'image_url',
         )
         read_only_fields = ('owner',)
 
@@ -63,16 +71,15 @@ class CatSerializer(serializers.ModelSerializer):
         return None
 
     def get_age(self, obj):
-        return dt.datetime.now().year - obj.birth_year
+        return dt.datetime.now(tz=dt.UTC).year - obj.birth_year
 
     def create(self, validated_data):
         if 'achievements' not in self.initial_data:
-            cat = Cat.objects.create(**validated_data)
-            return cat
+            return Cat.objects.create(**validated_data)
         achievements = validated_data.pop('achievements')
         cat = Cat.objects.create(**validated_data)
         for achievement in achievements:
-            current_achievement, status = Achievement.objects.get_or_create(
+            current_achievement, _status = Achievement.objects.get_or_create(
                 **achievement
             )
             AchievementCat.objects.create(
@@ -95,7 +102,7 @@ class CatSerializer(serializers.ModelSerializer):
         achievements_data = validated_data.pop('achievements')
         lst = []
         for achievement in achievements_data:
-            current_achievement, status = Achievement.objects.get_or_create(
+            current_achievement, _status = Achievement.objects.get_or_create(
                 **achievement
             )
             lst.append(current_achievement)

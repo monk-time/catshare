@@ -7,8 +7,8 @@ from rest_framework.test import APIClient
 
 class CatsAPITestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(username='auth_user')
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user(username='auth_user')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 

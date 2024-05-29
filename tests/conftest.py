@@ -3,25 +3,25 @@ from pathlib import Path
 
 import pytest
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 BACKEND_DIR_NAME = 'backend'
 FRONTEND_DIR_NAME = 'frontend'
 NGINX_DIR_NAME = 'nginx'
 DEPLOY_INFO_FILE_NAME = 'tests.yml'
-KITTYGRAM_DOMAIN_KEY = 'kittygram_domain'
+CATSHARE_DOMAIN_KEY = 'catshare_domain'
 TASKI_DOMAIN_KEY = 'taski_domain'
 DOCKERFILE_NAME = 'Dockerfile'
 DOCKERHUB_USERNAME_KEY = 'dockerhub_username'
-WORKFLOW_FILE = 'kittygram_workflow.yml'
+WORKFLOW_FILE = 'catshare_workflow.yml'
 
 for dir_name in (BACKEND_DIR_NAME, FRONTEND_DIR_NAME, NGINX_DIR_NAME):
     path_to_dir = BASE_DIR / dir_name
     if not path_to_dir.is_dir():
-        raise AssertionError(
+        msg = (
             f'В директории `{BASE_DIR}` не найдена папка проекта '
             f'`{dir_name}/`. Убедитесь, что у вас верная структура проекта.'
         )
+        raise AssertionError(msg)
 
 
 @pytest.fixture(scope='session')
@@ -71,10 +71,10 @@ def deploy_file_info() -> tuple[Path, str]:
 
 @pytest.fixture(scope='session')
 def deploy_info_file_content(
-        deploy_file_info: tuple[Path, str]
-        ) -> dict[str, str]:
+    deploy_file_info: tuple[Path, str],
+) -> dict[str, str]:
     path, relative_path = deploy_file_info
-    with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+    with path.open(encoding='utf-8', errors='ignore') as f:
         file_content = {}
         line_pattern = re.compile(r'[\w_]+: ?[^;]+')
         for line_num, line in enumerate(f.readlines(), 1):
@@ -86,8 +86,8 @@ def deploy_info_file_content(
                 '`<ключ>: <значение>`. В названии ключа '
                 'допустимы буквы и нижнее подчеркивание.'
             )
-            line = line.strip().strip(';')
-            key, value = line.split(':', maxsplit=1)
+            stripped_line = line.strip().strip(';')
+            key, value = stripped_line.split(':', maxsplit=1)
             file_content[key.strip()] = value.strip()
     return file_content
 
@@ -97,24 +97,24 @@ def expected_deploy_info_file_content() -> dict[str, str]:
     return {
         'repo_owner': 'ваше имя пользователя на GitHub',
         TASKI_DOMAIN_KEY: 'ссылка для доступа к проекту `Taski`',
-        KITTYGRAM_DOMAIN_KEY: 'ссылка для доступа к проекту Kittygram',
+        CATSHARE_DOMAIN_KEY: 'ссылка для доступа к проекту CatShare',
         'dockerhub_username': 'ваше имя пользователя на Docker Hub',
     }
 
 
-@pytest.fixture(params=(TASKI_DOMAIN_KEY, KITTYGRAM_DOMAIN_KEY))
+@pytest.fixture(params=(TASKI_DOMAIN_KEY, CATSHARE_DOMAIN_KEY))
 def link_key(request) -> str:
     return request.param
 
 
 @pytest.fixture(scope='session')
 def link_keys() -> tuple[str, str]:
-    return (KITTYGRAM_DOMAIN_KEY, TASKI_DOMAIN_KEY)
+    return (CATSHARE_DOMAIN_KEY, TASKI_DOMAIN_KEY)
 
 
 @pytest.fixture(scope='session')
-def kittygram_link_key() -> str:
-    return KITTYGRAM_DOMAIN_KEY
+def catshare_link_key() -> str:
+    return CATSHARE_DOMAIN_KEY
 
 
 @pytest.fixture(scope='session')
